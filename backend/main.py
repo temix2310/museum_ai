@@ -1,10 +1,11 @@
 from fastapi import FastAPI
-from backend.routes import recognize, paintings
+from backend.routes import recognize, paintings, stories
 
 app = FastAPI()
 
 app.include_router(recognize.router)
 app.include_router(paintings.router)
+app.include_router(stories.router)
 
 
 @app.get("/")

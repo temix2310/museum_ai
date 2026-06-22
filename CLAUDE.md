@@ -55,8 +55,8 @@ backend/
 3. paintings.json с данными о картинах  ✅ готово
 4. Распознавание двух картин (сравнение с эталонами)  ✅ готово
 5. GET /painting/{id}  ✅ готово
-6. GET /story/{id} — текст из JSON, без LLM  ← мы здесь
-7. POST /speech/{id} — генерация речи
+6. GET /story/{id} — текст из JSON, без LLM  ✅ готово
+7. POST /speech/{id} — генерация речи  ← мы здесь
 8. GET /artist/{id}
 9. POST /experience — всё сразу
 
@@ -67,4 +67,4 @@ backend/
 Этапы 1–4 завершены. Сервер запускается, POST /recognize принимает фото
 и распознаёт Mona Lisa и Starry Night через imagehash.
 
-Следующий шаг: Этап 6 — GET /story/{id}, возвращает рассказ художника из paintings.json.
+Следующий шаг: Этап 7 — POST /speech/{id}, генерация аудио из текста рассказа.
