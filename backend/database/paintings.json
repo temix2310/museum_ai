@@ -4,6 +4,7 @@
       "id": "mona_lisa",
       "title": "Mona Lisa",
       "artist": "Leonardo da Vinci",
+      "artist_id": "leonardo_da_vinci",
       "year": 1503,
       "story": "Я писал её четыре года. Говорят, улыбка её загадочна — но я просто пытался поймать момент живой мысли на лице."
     },
@@ -11,6 +12,7 @@
       "id": "starry_night",
       "title": "The Starry Night",
       "artist": "Vincent van Gogh",
+      "artist_id": "vincent_van_gogh",
       "year": 1889,
       "story": "Я написал её из окна своей палаты в Сен-Реми. Ночное небо живёт и дышит — я просто показал то, что чувствовал."
     }
