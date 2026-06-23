@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from backend.routes import recognize, paintings, stories, speech, avatars
+from backend.routes import recognize, paintings, stories, speech, avatars, experience
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -17,6 +17,7 @@ app.include_router(paintings.router)
 app.include_router(stories.router)
 app.include_router(speech.router)
 app.include_router(avatars.router)
+app.include_router(experience.router)
 
 
 @app.get("/")
