@@ -31,7 +31,7 @@ const MOCK_RESULTS: Record<string, any> = {
     artist: 'Vincent van Gogh',
     artist_id: 'vincent_van_gogh',
     year: 1889,
-    story: 'Я написал её из окна своей палаты в Сен-Реми. Ночное небо живёт и дышит — я просто показал то, что чувствовал.',
+    story: 'Я написал её из окна своей палаты в Сен-Реми. Ночное небо живёт и дышит — я писал не то, что видел, а то, что чувствовал.',
     audio_url: '/audio/starry_night',
     artist_photo_url: '/artist/vincent_van_gogh',
     local_audio: require('../assets/starry_night.mp3'),
@@ -80,8 +80,8 @@ export default function HomeScreen({ navigation }: Props) {
         </View>
 
         {/* Карточки картин в светлом стиле с синими акцентами */}
-        <TouchableOpacity 
-          style={styles.card} 
+        <TouchableOpacity
+          style={styles.card}
           activeOpacity={0.8}
           onPress={() => handleMockPress('mona_lisa')}
         >
@@ -97,8 +97,8 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.card} 
+        <TouchableOpacity
+          style={styles.card}
           activeOpacity={0.8}
           onPress={() => handleMockPress('starry_night')}
         >

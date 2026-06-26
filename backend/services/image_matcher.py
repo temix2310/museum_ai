@@ -9,7 +9,7 @@ PAINTINGS = {
     "starry_night": f"{ASSETS_DIR}/starry_night.jpg",
 }
 
-THRESHOLD = 15
+THRESHOLD = 25
 
 
 def match_painting(image_bytes: bytes) -> str | None:
