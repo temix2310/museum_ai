@@ -2,7 +2,7 @@
 // ВАЖНО: Так как приложение запускается на телефоне через Expo Go,
 // localhost работать не будет. Нужно указать локальный IP-адрес вашего компьютера.
 // Пример: 'http://192.168.1.100:8000'
-export const BASE_URL = 'http://192.168.0.100:8000'; // Автоматически определенный IP вашего компьютера
+export const BASE_URL = 'http://192.168.0.162:8000'; // Автоматически определенный IP вашего компьютера
 
 export interface ScanResponse {
   painting_id: string;
@@ -21,12 +21,12 @@ export interface ScanResponse {
  */
 export async function uploadPaintingImage(imageUri: string): Promise<ScanResponse> {
   const formData = new FormData();
-  
+
   // Формируем файл для отправки
   const filename = imageUri.split('/').pop() || 'painting.jpg';
   const match = /\.(\w+)$/.exec(filename);
   const type = match ? `image/${match[1]}` : `image/jpeg`;
-  
+
   // В React Native FormData требует объект с uri, name, type
   formData.append('file', {
     uri: imageUri,
@@ -40,7 +40,6 @@ export async function uploadPaintingImage(imageUri: string): Promise<ScanRespons
       body: formData,
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'multipart/multipart-form-data', // React Native сам подставит границы boundary
       },
     });
 
