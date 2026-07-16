@@ -1,12 +1,13 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parent / ".env")
 
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-if not ANTHROPIC_API_KEY:
+if not GEMINI_API_KEY:
     raise RuntimeError(
-        "ANTHROPIC_API_KEY не найден. Скопируйте backend/.env.example в "
-        "backend/.env и впишите туда свой ключ Anthropic API."
+        "GEMINI_API_KEY не найден. Скопируйте backend/.env.example в "
+        "backend/.env и впишите туда свой ключ Google AI Studio."
     )

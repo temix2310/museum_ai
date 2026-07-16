@@ -2,6 +2,6 @@ fastapi
 uvicorn
 python-multipart
 Pillow
-anthropic
+google-genai
 python-dotenv
 gTTS

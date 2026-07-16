@@ -1,10 +1,10 @@
-from anthropic import Anthropic
+from google import genai
 
 from backend import config
 
-MODEL = "claude-sonnet-5"
+MODEL = "gemini-flash-latest"
 
-client = Anthropic(api_key=config.ANTHROPIC_API_KEY)
+client = genai.Client(api_key=config.GEMINI_API_KEY)
 
 PROMPT_TEMPLATE = """Ты — {artist}, автор картины «{title}» ({year} год). Напиши
 короткий рассказ от своего лица об этой картине — 2-3 предложения, как будто
@@ -17,13 +17,12 @@ def generate_story(title: str, artist: str, year: int | None) -> str | None:
     prompt = PROMPT_TEMPLATE.format(artist=artist, title=title, year=year or "неизвестный")
 
     try:
-        response = client.messages.create(
+        response = client.models.generate_content(
             model=MODEL,
-            max_tokens=300,
-            messages=[{"role": "user", "content": prompt}],
+            contents=prompt
         )
     except Exception:
         return None
 
-    text = next((block.text for block in response.content if block.type == "text"), "").strip()
+    text = (response.text or "").strip()
     return text or None
