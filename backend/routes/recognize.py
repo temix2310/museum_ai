@@ -13,7 +13,7 @@ async def recognize(file: UploadFile = File(...)):
         return {"painting_id": result.painting_id}
 
     if result.recognized_title:
-        raise   HTTPException(
+        raise HTTPException(
             status_code=404,
             detail=f"Мы узнали «{result.recognized_title}» ({result.recognized_artist}), но не смогли добавить её в базу",
         )

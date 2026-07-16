@@ -1,22 +1,18 @@
-import json
 import os
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 from backend.services.speech_generator import generate_speech
+from backend.services import painting_db
 
 router = APIRouter()
-
-with open("backend/database/paintings.json", encoding="utf-8") as f:
-    data = json.load(f)
-
-PAINTINGS = {p["id"]: p for p in data["paintings"]}
 
 
 @router.post("/speech/{id}")
 def create_speech(id: str):
-    if id not in PAINTINGS:
+    painting = painting_db.get_painting(id)
+    if painting is None:
         raise HTTPException(status_code=404, detail="Картина не найдена")
-    filepath = generate_speech(PAINTINGS[id]["story"], id)
+    filepath = generate_speech(painting["story"], id)
     return FileResponse(filepath, media_type="audio/mpeg")
 
 
