@@ -7,9 +7,15 @@ router = APIRouter()
 @router.post("/recognize")
 async def recognize(file: UploadFile = File(...)):
     image_bytes = await file.read()
-    painting_id = match_painting(image_bytes)
+    result = match_painting(image_bytes)
 
-    if painting_id is None:
-        raise HTTPException(status_code=404, detail="Картина не распознана")
+    if result.painting_id:
+        return {"painting_id": result.painting_id}
 
-    return {"painting_id": painting_id}
+    if result.recognized_title:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Мы узнали «{result.recognized_title}» ({result.recognized_artist}), но не смогли добавить её в базу",
+        )
+
+    raise HTTPException(status_code=404, detail="Картина не распознана")

@@ -5,10 +5,14 @@ import os
 router = APIRouter()
 
 ARTISTS_DIR = "backend/assets/artists"
+PLACEHOLDER_PATH = f"{ARTISTS_DIR}/placeholder.jpg"
+
 
 @router.get("/artist/{id}")
 def get_artist(id: str):
     filepath = f"{ARTISTS_DIR}/{id}.jpg"
     if not os.path.exists(filepath):
-        raise HTTPException(status_code=404, detail="Художник не найден")
+        if not os.path.exists(PLACEHOLDER_PATH):
+            raise HTTPException(status_code=404, detail="Художник не найден")
+        filepath = PLACEHOLDER_PATH
     return FileResponse(filepath, media_type="image/jpeg")

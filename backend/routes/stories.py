@@ -1,20 +1,17 @@
 import json
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
+from backend.services import painting_db
 
 router = APIRouter()
-
-with open("backend/database/paintings.json", encoding="utf-8") as f:
-    data = json.load(f)
-
-PAINTINGS = {p["id"]: p for p in data["paintings"]}
 
 
 @router.get("/story/{id}")
 def get_story(id: str):
-    if id not in PAINTINGS:
+    painting = painting_db.get_painting(id)
+    if painting is None:
         raise HTTPException(status_code=404, detail="Картина не найдена")
-    result = {"id": id, "story": PAINTINGS[id]["story"]}
+    result = {"id": id, "story": painting["story"]}
     return Response(
         content=json.dumps(result, ensure_ascii=False),
         media_type="application/json; charset=utf-8"
