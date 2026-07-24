@@ -76,7 +76,9 @@ cp backend/.env.example backend/.env
 # и вписать в него: GEMINI_API_KEY=ваш_ключ
 
 # Запустить сервер (обязательно так, с указанием backend.main)
-uvicorn backend.main:app --reload
+# --host 0.0.0.0 нужен, чтобы сервер был виден с телефона в той же Wi-Fi сети
+# (без него uvicorn слушает только 127.0.0.1, и телефон не сможет подключиться)
+uvicorn backend.main:app --reload --host 0.0.0.0
 ```
 Сервер запустится на `http://127.0.0.1:8000`
 Документация API доступна на `http://127.0.0.1:8000/docs`
