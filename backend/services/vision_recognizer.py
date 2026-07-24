@@ -1,17 +1,17 @@
+import base64
 import io
 import json
 import re
 
 from PIL import Image
-from google import genai
-from google.genai import types
+from anthropic import Anthropic
 
 from backend import config
 
-MODEL = "gemini-flash-latest"
+MODEL = "claude-sonnet-5"
 MAX_SIDE = 1024
 
-client = genai.Client(api_key=config.GEMINI_API_KEY)
+client = Anthropic(api_key=config.ANTHROPIC_API_KEY)
 
 PROMPT = """Определи, какая известная картина изображена на фото.
 
@@ -46,20 +46,33 @@ def _parse_json(text: str) -> dict | None:
 
 
 def identify_painting(image_bytes: bytes) -> dict | None:
-    resized = _resize(image_bytes)
+    """Просит Claude определить картину на фото.
+
+    Возвращает {"title": ..., "artist": ..., "year": ...} если Claude уверенно
+    узнала произведение, иначе None (не картина / не удалось распознать / сбой сети).
+    """
+    b64 = base64.standard_b64encode(_resize(image_bytes)).decode("utf-8")
 
     try:
-        response = client.models.generate_content(
+        response = client.messages.create(
             model=MODEL,
-            contents=[
-                types.Part.from_bytes(data=resized, mime_type="image/jpeg"),
-                PROMPT,
-            ],
+            max_tokens=300,
+            messages=[{
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image",
+                        "source": {"type": "base64", "media_type": "image/jpeg", "data": b64},
+                    },
+                    {"type": "text", "text": PROMPT},
+                ],
+            }],
         )
     except Exception:
         return None
 
-    data = _parse_json(response.text or "")
+    text = next((block.text for block in response.content if block.type == "text"), "")
+    data = _parse_json(text)
 
     if not data or not data.get("recognized"):
         return None
