@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import Response
 import json
@@ -34,6 +35,10 @@ async def experience(file: UploadFile = File(...)):
         "audio_url": f"/audio/{result.painting_id}",
         "artist_photo_url": f"/artist/{painting['artist_id']}"
     }
+
+    video_path = f"backend/assets/videos/{result.painting_id}.mp4"
+    if os.path.exists(video_path):
+        response_data["video_url"] = f"/video/{result.painting_id}"
 
 
     return Response(
