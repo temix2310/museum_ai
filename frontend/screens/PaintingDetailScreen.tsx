@@ -25,9 +25,9 @@ export default function PaintingDetailScreen({ route }: Props) {
   const [videoDuration, setVideoDuration] = useState(0);
   const soundRef = useRef<Audio.Sound | null>(null);
 
-  const localPhoto = (result as any).local_photo;
-  const localAudio = (result as any).local_audio;
-  const localVideo = (result as any).local_video;
+  const localPhoto = result.local_photo;
+  const localAudio = result.local_audio;
+  const localVideo = result.local_video;
 
   const fullAudioUrl = result.audio_url.startsWith('http') 
     ? result.audio_url 
@@ -219,7 +219,7 @@ export default function PaintingDetailScreen({ route }: Props) {
             {/* Видеоплеер */}
             <View style={styles.videoContainer}>
               <Video
-                source={videoSource}
+                source={videoSource!}
                 style={styles.video}
                 useNativeControls
                 resizeMode={ResizeMode.CONTAIN}

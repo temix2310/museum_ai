@@ -1,6 +1,6 @@
+import os
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from fastapi.responses import Response
-import json
+from backend.routes.videos import VIDEOS_DIR
 from backend.services.image_matcher import match_painting
 from backend.services import painting_db
 from backend.services.speech_generator import generate_speech
@@ -33,11 +33,11 @@ async def experience(file: UploadFile = File(...)):
         "story": painting["story"],
         "audio_url": f"/audio/{result.painting_id}",
         "artist_photo_url": f"/artist/{painting['artist_id']}",
-        "video_url": painting.get("video_url", "")
+        "video_url": ""
     }
 
+    video_path = os.path.join(VIDEOS_DIR, f"{result.painting_id}.mp4")
+    if os.path.exists(video_path):
+        response_data["video_url"] = f"/video/{result.painting_id}"
 
-    return Response(
-        content=json.dumps(response_data, ensure_ascii=False),
-        media_type="application/json; charset=utf-8"
-    )
+    return response_data

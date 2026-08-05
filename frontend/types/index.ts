@@ -17,6 +17,10 @@ export interface ScanResult {
   audio_url: string;
   artist_photo_url: string;
   video_url?: string;
+  // Локальные медиафайлы (заполняются на клиенте, не приходят с сервера)
+  local_photo?: { uri: string };
+  local_audio?: { uri: string };
+  local_video?: { uri: string };
 }
 
 export interface RecentScan {
