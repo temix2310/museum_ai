@@ -16,6 +16,7 @@ export interface ScanResult {
   story: string;
   audio_url: string;
   artist_photo_url: string;
+  video_url?: string;
 }
 
 export interface RecentScan {

@@ -24,7 +24,7 @@ export default function AppNavigator() {
           headerStyle: {
             backgroundColor: Colors.background,
           },
-          headerTintColor: Colors.gold,
+          headerTintColor: Colors.accent,
           headerTitleStyle: {
             fontFamily: 'Georgia',
             fontWeight: 'bold',

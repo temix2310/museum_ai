@@ -32,7 +32,8 @@ async def experience(file: UploadFile = File(...)):
         "year": painting["year"],
         "story": painting["story"],
         "audio_url": f"/audio/{result.painting_id}",
-        "artist_photo_url": f"/artist/{painting['artist_id']}"
+        "artist_photo_url": f"/artist/{painting['artist_id']}",
+        "video_url": painting.get("video_url", "")
     }
 
 

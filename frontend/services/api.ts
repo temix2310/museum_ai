@@ -13,6 +13,7 @@ export interface ScanResponse {
   story: string;
   audio_url: string;
   artist_photo_url: string;
+  video_url?: string;
 }
 
 /**

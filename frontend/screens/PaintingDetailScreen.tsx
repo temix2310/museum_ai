@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
-import { Audio } from 'expo-av';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Audio, Video, ResizeMode } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -8,6 +8,8 @@ import { Colors, Typography } from '../components/Theme';
 import { BASE_URL } from '../services/api';
 
 type PaintingDetailRouteProp = RouteProp<RootStackParamList, 'PaintingDetail'>;
+
+type MediaMode = 'audio' | 'video';
 
 interface Props {
   route: PaintingDetailRouteProp;
@@ -19,10 +21,13 @@ export default function PaintingDetailScreen({ route }: Props) {
   const [loadingAudio, setLoadingAudio] = useState(false);
   const [audioPosition, setAudioPosition] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
+  const [mediaMode, setMediaMode] = useState<MediaMode>('audio');
+  const [videoDuration, setVideoDuration] = useState(0);
   const soundRef = useRef<Audio.Sound | null>(null);
 
   const localPhoto = (result as any).local_photo;
   const localAudio = (result as any).local_audio;
+  const localVideo = (result as any).local_video;
 
   const fullAudioUrl = result.audio_url.startsWith('http') 
     ? result.audio_url 
@@ -34,6 +39,14 @@ export default function PaintingDetailScreen({ route }: Props) {
 
   const imageSource = localPhoto ? localPhoto : { uri: fullArtistPhotoUrl };
   const audioSource = localAudio ? localAudio : { uri: fullAudioUrl };
+
+  const videoSource = localVideo 
+    ? localVideo 
+    : result.video_url 
+      ? { uri: result.video_url.startsWith('http') ? result.video_url : `${BASE_URL}${result.video_url}` }
+      : null;
+
+  const hasVideo = videoSource !== null;
 
   useEffect(() => {
     return () => {
@@ -83,6 +96,15 @@ export default function PaintingDetailScreen({ route }: Props) {
     }
   };
 
+  const switchMode = (mode: MediaMode) => {
+    // При переключении аудио ставим на паузу
+    if (mode === 'video' && soundRef.current && isPlaying) {
+      soundRef.current.pauseAsync();
+      setIsPlaying(false);
+    }
+    setMediaMode(mode);
+  };
+
   const getProgress = () => {
     if (audioDuration === 0) return 0;
     return audioPosition / audioDuration;
@@ -93,6 +115,12 @@ export default function PaintingDetailScreen({ route }: Props) {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = Math.floor(totalSeconds % 60);
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
+  const onVideoLoad = (status: any) => {
+    if (status.durationMillis) {
+      setVideoDuration(status.durationMillis);
+    }
   };
 
   return (
@@ -119,35 +147,90 @@ export default function PaintingDetailScreen({ route }: Props) {
         </View>
       </View>
 
-      {/* Аудиоплеер в сине-белых тонах */}
+      {/* Медиаплеер: аудио / видео */}
       <View style={styles.playerCard}>
-        <Text style={styles.playerTitle}>Рассказ о картине</Text>
-        
-        {/* Прогресс-бар */}
-        <View style={styles.progressContainer}>
-          <View style={styles.progressBarBg}>
-            <View style={[styles.progressBarFill, { width: `${getProgress() * 100}%` }]} />
-          </View>
-          <View style={styles.timeRow}>
-            <Text style={styles.timeText}>{formatTime(audioPosition)}</Text>
-            <Text style={styles.timeText}>{formatTime(audioDuration)}</Text>
-          </View>
-        </View>
+        <Text style={styles.playerTitle}>Экскурсия</Text>
 
-        {/* Кнопка воспроизведения */}
-        <View style={styles.controlsRow}>
-          {loadingAudio ? (
-            <ActivityIndicator size="large" color={Colors.accent} style={styles.playButton} />
-          ) : (
-            <TouchableOpacity style={styles.playButton} onPress={handlePlayPause}>
+        {/* Переключатель Аудио / Видео */}
+        {hasVideo && (
+          <View style={styles.modeSwitch}>
+            <TouchableOpacity
+              style={[styles.modeButton, mediaMode === 'audio' && styles.modeButtonActive]}
+              onPress={() => switchMode('audio')}
+              activeOpacity={0.7}
+            >
               <Ionicons 
-                name={isPlaying ? "pause-circle" : "play-circle"} 
-                size={64} 
-                color={Colors.accent} 
+                name="headset" 
+                size={16} 
+                color={mediaMode === 'audio' ? '#FFF' : Colors.accent} 
               />
+              <Text style={[styles.modeButtonText, mediaMode === 'audio' && styles.modeButtonTextActive]}>
+                Аудио
+              </Text>
             </TouchableOpacity>
-          )}
-        </View>
+            <TouchableOpacity
+              style={[styles.modeButton, mediaMode === 'video' && styles.modeButtonActive]}
+              onPress={() => switchMode('video')}
+              activeOpacity={0.7}
+            >
+              <Ionicons 
+                name="videocam" 
+                size={16} 
+                color={mediaMode === 'video' ? '#FFF' : Colors.accent} 
+              />
+              <Text style={[styles.modeButtonText, mediaMode === 'video' && styles.modeButtonTextActive]}>
+                Видео
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {mediaMode === 'audio' ? (
+          <>
+            {/* Аудиоплеер */}
+            {/* Прогресс-бар */}
+            <View style={styles.progressContainer}>
+              <View style={styles.progressBarBg}>
+                <View style={[styles.progressBarFill, { width: `${getProgress() * 100}%` }]} />
+              </View>
+              <View style={styles.timeRow}>
+                <Text style={styles.timeText}>{formatTime(audioPosition)}</Text>
+                <Text style={styles.timeText}>{formatTime(audioDuration)}</Text>
+              </View>
+            </View>
+
+            {/* Кнопка воспроизведения */}
+            <View style={styles.controlsRow}>
+              {loadingAudio ? (
+                <ActivityIndicator size="large" color={Colors.accent} style={styles.playButton} />
+              ) : (
+                <TouchableOpacity style={styles.playButton} onPress={handlePlayPause}>
+                  <Ionicons 
+                    name={isPlaying ? "pause-circle" : "play-circle"} 
+                    size={64} 
+                    color={Colors.accent} 
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          </>
+        ) : (
+          <>
+            {/* Видеоплеер */}
+            <View style={styles.videoContainer}>
+              <Video
+                source={videoSource}
+                style={styles.video}
+                useNativeControls
+                resizeMode={ResizeMode.CONTAIN}
+                onLoad={onVideoLoad}
+              />
+            </View>
+            <Text style={styles.videoDurationText}>
+              Длительность: {formatTime(videoDuration)}
+            </Text>
+          </>
+        )}
       </View>
 
       {/* Текстовая история */}
@@ -264,6 +347,35 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     marginBottom: 16,
   },
+  modeSwitch: {
+    flexDirection: 'row',
+    backgroundColor: Colors.background,
+    borderRadius: 10,
+    padding: 4,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  modeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    gap: 6,
+  },
+  modeButtonActive: {
+    backgroundColor: Colors.accent,
+  },
+  modeButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.accent,
+  },
+  modeButtonTextActive: {
+    color: '#FFF',
+  },
   progressContainer: {
     width: '100%',
     marginBottom: 12,
@@ -296,6 +408,22 @@ const styles = StyleSheet.create({
   playButton: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  videoContainer: {
+    width: '100%',
+    aspectRatio: 16 / 9,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: '#000',
+  },
+  video: {
+    width: '100%',
+    height: '100%',
+  },
+  videoDurationText: {
+    ...Typography.bodyMedium,
+    marginTop: 10,
+    textAlign: 'center',
   },
   storyCard: {
     backgroundColor: Colors.cardBackground,
