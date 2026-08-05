@@ -6,6 +6,8 @@ from backend.services import painting_db
 
 router = APIRouter()
 
+AUDIO_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "audio")
+
 
 @router.post("/speech/{id}")
 def create_speech(id: str):
@@ -18,7 +20,7 @@ def create_speech(id: str):
 
 @router.get("/audio/{id}")
 def get_audio(id: str):
-    filepath = f"backend/assets/audio/{id}.mp3"
+    filepath = os.path.join(AUDIO_DIR, f"{id}.mp3")
     if not os.path.exists(filepath):
         raise HTTPException(status_code=404, detail="Аудио не найдено")
     return FileResponse(filepath, media_type="audio/mpeg")

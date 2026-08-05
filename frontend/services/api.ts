@@ -1,25 +1,16 @@
+import { ScanResult } from '../types';
+
 // Настройки подключения к бэкенду
 // ВАЖНО: Так как приложение запускается на телефоне через Expo Go,
 // localhost работать не будет. Нужно указать локальный IP-адрес вашего компьютера.
 // Пример: 'http://192.168.1.100:8000'
 export const BASE_URL = 'http://192.168.0.162:8000'; // Автоматически определенный IP вашего компьютера
 
-export interface ScanResponse {
-  painting_id: string;
-  title: string;
-  artist: string;
-  artist_id: string;
-  year: number;
-  story: string;
-  audio_url: string;
-  artist_photo_url: string;
-}
-
 /**
  * Отправляет снимок с камеры на сервер для распознавания картины
  * @param imageUri Локальный URI снимка на телефоне
  */
-export async function uploadPaintingImage(imageUri: string): Promise<ScanResponse> {
+export async function uploadPaintingImage(imageUri: string): Promise<ScanResult> {
   const formData = new FormData();
 
   // Формируем файл для отправки
